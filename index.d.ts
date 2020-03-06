@@ -14,32 +14,32 @@ declare module "react-native-text-size" {
   }
 
   export type TSMDStyleSpec =
-  | 'h1'
-  | 'h2'
-  | 'h3'
-  | 'h4'
-  | 'h5'
-  | 'h6'
-  | 'subtitle1'
-  | 'subtitle2'
-  | 'body1'
-  | 'body2'
-  | 'button'
-  | 'caption'
-  | 'overline'
+    | 'h1'
+    | 'h2'
+    | 'h3'
+    | 'h4'
+    | 'h5'
+    | 'h6'
+    | 'subtitle1'
+    | 'subtitle2'
+    | 'body1'
+    | 'body2'
+    | 'button'
+    | 'caption'
+    | 'overline'
 
   export type TSTextStyle =
-  | 'body'
-  | 'callout'
-  | 'caption1'
-  | 'caption2'
-  | 'footnote'
-  | 'headline'
-  | 'subheadline'
-  | 'largeTitle'
-  | 'title1'
-  | 'title2'
-  | 'title3'
+    | 'body'
+    | 'callout'
+    | 'caption1'
+    | 'caption2'
+    | 'footnote'
+    | 'headline'
+    | 'subheadline'
+    | 'largeTitle'
+    | 'title1'
+    | 'title2'
+    | 'title3'
 
   export type TSFontInfo = {
     fontFamily: string | null,
@@ -127,7 +127,29 @@ declare module "react-native-text-size" {
      * for the required line number.
      */
     lineInfoForLine?: number;
+
+    /**
+     * If `true`, the results will contain a `lineInfo` property with information
+     * for all lines
+     */
+    includeAllLines?: boolean;
   }
+
+  export type TSMeasureLineInfo = {
+    /** Line number of this info, base 0.
+     *
+     * It can be less than the requested line number if `lineInfoForLine` is out of range.
+     */
+    line: number;
+    /** Text offset of the beginning of this line. */
+    start: number;
+    /** Text offset after the last _visible_ character (so whitespace is not counted) on this line. */
+    end: number;
+    /** The vertical position of the bottom of this line, including padding. */
+    bottom: number;
+    /** Horizontal extent of this line, including leading margin indent, but excluding trailing whitespace. */
+    width: number;
+  };
 
   export type TSMeasureResult = {
     /**
@@ -152,23 +174,9 @@ declare module "react-native-text-size" {
      */
     lineCount: number;
     /**
-     * Line information, if the `lineInfoForLine` option is given.
+     * Line information, if the `lineInfoForLine` or `includeAllLines` option is given.
      */
-    lineInfo?: {
-      /** Line number of this info, base 0.
-       *
-       * It can be less than the requested line number if `lineInfoForLine` is out of range.
-       */
-      line: number;
-      /** Text offset of the beginning of this line. */
-      start: number;
-      /** Text offset after the last _visible_ character (so whitespace is not counted) on this line. */
-      end: number;
-      /** The vertical position of the bottom of this line, including padding. */
-      bottom: number;
-      /** Horizontal extent of this line, including leading margin indent, but excluding trailing whitespace. */
-      width: number;
-    };
+    lineInfo?: TSMeasureLineInfo | TSMeasureLineInfo[];
   }
 
   interface TextSizeStatic {

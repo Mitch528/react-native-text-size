@@ -77,6 +77,7 @@ class RNTextSizeModule extends ReactContextBaseJavaModule {
         final float density = getCurrentDensity();
         final float width = conf.getWidth(density);
         final boolean includeFontPadding = conf.includeFontPadding;
+        final boolean includeAllLines = conf.getBoolean("includeAllLines");
 
         final WritableMap result = Arguments.createMap();
         if (_text.isEmpty()) {
@@ -162,7 +163,23 @@ class RNTextSizeModule extends ReactContextBaseJavaModule {
             result.putInt("lineCount", lineCount);
 
             Integer lineInfoForLine = conf.getIntOrNull("lineInfoForLine");
-            if (lineInfoForLine != null && lineInfoForLine >= 0) {
+
+            if (includeAllLines) {
+                final WritableArray lines = Arguments.createArray();
+
+                for (int line = 0; line < lineCount; line++) {
+                    final WritableMap info = Arguments.createMap();
+                    info.putInt("line", line);
+                    info.putInt("start", layout.getLineStart(line));
+                    info.putInt("end", layout.getLineVisibleEnd(line));
+                    info.putDouble("bottom", layout.getLineBottom(line) / density);
+                    info.putDouble("width", layout.getLineMax(line) / density);
+
+                    lines.pushMap(info);
+                }
+
+                result.putArray("lineInfo", lines);
+            } else if (lineInfoForLine != null && lineInfoForLine >= 0) {
                 final int line = Math.min(lineInfoForLine, lineCount);
                 final WritableMap info = Arguments.createMap();
                 info.putInt("line", line);
@@ -170,6 +187,7 @@ class RNTextSizeModule extends ReactContextBaseJavaModule {
                 info.putInt("end", layout.getLineVisibleEnd(line));
                 info.putDouble("bottom", layout.getLineBottom(line) / density);
                 info.putDouble("width", layout.getLineMax(line) / density);
+
                 result.putMap("lineInfo", info);
             }
 
@@ -374,8 +392,9 @@ class RNTextSizeModule extends ReactContextBaseJavaModule {
 
     /**
      * This is for 'fontFromFontStyle', makes the minimal info required.
-     * @param suffix The font variant
-     * @param fontSize Font size in SP
+     *
+     * @param suffix        The font variant
+     * @param fontSize      Font size in SP
      * @param letterSpacing Sugest this to user
      * @return map with specs
      */
@@ -443,6 +462,7 @@ class RNTextSizeModule extends ReactContextBaseJavaModule {
 
     /**
      * Set the font names in assets/fonts into the target array.
+     *
      * @param destArr Target
      */
     private void getFontsInAssets(@Nonnull WritableArray destArr) {
